@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Demo</title>
+    <script src="vue.js"></script>
+    <script src="vue-validator.js"></script>
+    <script src="vue-validator-manage.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <template id="template">
+            <div>
+                <validator name="validation">
+                    <form novalidate>
+                        <div>
+                            <label for="">username</label>
+                            <input v-fieldname="username" v-model="username" type="text" v-validate:username="{
+                          required: { rule: true, message: 'required you name !!' },
+                          minlength:{rule:1,message:'最小为1'}
+                        }">
+                        </div>
+                        <div>
+                            <label for="">username2</label>
+                            <input type="text" v-validate:username2="{
+                          required: { rule: true, message: 'required you name !!' },
+                          minlength:{rule:2,message:'最小为2'}
+                        }">
+                        </div>
+                        <div style="padding:30px">
+                            这一组是否有效：{{$validation.valid}}
+                        </div>
+                    </form>
+                </validator>
+            </div>
+        </template>
+        <template id="template2">
+            <div>
+                <validator name="validation1">
+                    <form novalidate>
+                        <div>
+                            <label for="">username3</label>
+                            <input type="text" v-validate:username3="{
+                          required: { rule: true, message: 'required you name !!' },
+                          minlength:{rule:1,message:'最小为1'}
+                        }">
+                        </div>
+                        <div>
+                            <label for="">username4</label>
+                            <input v-fieldname="username4" v-model="username4" type="text" v-validate:username4="{
+                          required: { rule: true, message: 'required you name !!' },
+                          minlength:{rule:2,message:'最小为2'}
+                        }">
+                        </div>
+                        <div style="padding:30px">
+                            这一组是否有效：{{$validation1.valid}}
+                        </div>
+                    </form>
+                </validator>
+            </div>
+        </template>
+        <h2>验证内容：</h2>
+        <h3>第一组</h3>
+        <my-component v-fieldset="aaa"></my-component>
+        <h3>第二组</h3>
+        <my-component2 v-fieldset="bbb"></my-component2>
+        <input type="submit" v-if="validation.valid" @click="submit">
+        <h2>验证结果：</h2>
+        <pre>{{validation|json}}</pre>
+        <input type="text" v-fieldname="aaa" v-model="aaa">
+    </div>
+    <script>
+    var MyComponent = Vue.extend({
+        template: '#template',
+        data: function() {
+            return {
+                username: '111',
+            }
+        }
+    })
+    Vue.component('my-component', MyComponent);
+
+    var MyComponent2 = Vue.extend({
+        template: '#template2',
+        data: function() {
+            return {
+                username4: '444',
+            }
+        }
+    })
+    Vue.component('my-component2', MyComponent2);
+
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            validation: {},
+            aaa: ''
+        },
+        methods: {
+            submit: function() {
+                // 模拟提交
+                console.log(this.getFieldsData());
+            },
+        },
+        events: {
+            'form-valid': function() {
+                console.log('form-valid!!')
+            },
+            'form-invalid': function() {
+                console.log('form-invalid!!')
+            },
+            'form-dirty': function() {
+                console.log('form-dirty!!')
+            }
+        }
+    })
+    </script>
+</body>
+
+</html>
