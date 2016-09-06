@@ -3,7 +3,6 @@
  * @description vue表单验证管理插件；依赖vue.js和vue-validator.js
  * @author tangciwei(tangciwei@baidu.com)
  */
-
 import u from 'underscore';
 
 // 事件名
@@ -15,7 +14,8 @@ const FORM_DIRTY = 'form-dirty';
 const FORM_PRISTINE = 'form-pristine';
 const FORM_MODIFIED = 'form-modified';
 
-let assgin = Object.assgin ? Object.assgin : u.extend;
+let assign = Object.assign ? Object.assign : u.extend;
+
 let ValidateManage = {};
 
 ValidateManage.install = (Vue, options) => {
