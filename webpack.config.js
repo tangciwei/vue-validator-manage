@@ -1,3 +1,4 @@
+/* eslint-disable */
 var webpack = require('webpack');
 module.exports = {
     entry: './src/vue-validator-manage.js',
@@ -12,7 +13,7 @@ module.exports = {
             query: {
                 presets: ['es2015']
             },
-            // include: __dirname + '/src',
+            include: __dirname + '/src',
         }, {
             test: /\.html/,
             loader: 'html',

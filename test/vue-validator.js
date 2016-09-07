@@ -1,3 +1,4 @@
+/* eslint-disable */
 /*!
  * vue-validator v2.1.4
  * (c) 2016 kazuya kawaguchi

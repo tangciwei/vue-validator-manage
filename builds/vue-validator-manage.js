@@ -1,3 +1,4 @@
+/* eslint-disable */
 /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -46,22 +47,41 @@
 
 	'use strict';
 
+	var _vueValidatorManage = __webpack_require__(1);
+
+	var _vueValidatorManage2 = _interopRequireDefault(_vueValidatorManage);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/***/ },
+/* 1 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
 
-	var _underscore = __webpack_require__(1);
+	var _underscore = __webpack_require__(2);
 
 	var _underscore2 = _interopRequireDefault(_underscore);
 
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	function _interopRequireDefault(obj) {
+	    return obj && obj.__esModule ? obj : { default: obj };
+	}
 
-	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
-	                                                                                                                                                                                                                   * @file validate-manage.js
-	                                                                                                                                                                                                                   * @description vue表单验证管理插件；依赖vue.js和vue-validator.js
-	                                                                                                                                                                                                                   * @author tangciwei(tangciwei@baidu.com)
-	                                                                                                                                                                                                                   */
-
+	function _defineProperty(obj, key, value) {
+	    if (key in obj) {
+	        Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true });
+	    } else {
+	        obj[key] = value;
+	    }return obj;
+	} /**
+	   * @file validate-manage.js
+	   * @description vue表单验证管理插件；依赖vue.js和vue-validator.js
+	   * @author tangciwei(tangciwei@baidu.com)
+	   */
 
 	// 事件名
 	var FORM_VALID = 'form-valid';
@@ -206,7 +226,6 @@
 	        var pristine = $validation.pristine;
 	        var errors = $validation.errors;
 
-
 	        var value = { valid: valid, invalid: invalid, touched: touched, untouched: untouched, modified: modified, dirty: dirty, pristine: pristine, errors: errors };
 
 	        vm.validation = assign({}, vm.validation, _defineProperty({}, key, value));
@@ -296,7 +315,7 @@
 	exports.default = ValidateManage;
 
 /***/ },
-/* 1 */
+/* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
