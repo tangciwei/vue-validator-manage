@@ -12,7 +12,7 @@ module.exports = {
             query: {
                 presets: ['es2015']
             },
-            include: __dirname + '/src',
+            // include: __dirname + '/src',
         }, {
             test: /\.html/,
             loader: 'html',

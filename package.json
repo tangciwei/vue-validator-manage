@@ -2,7 +2,7 @@
     "name": "vue-validator-manage",
     "version": "1.0.1",
     "description": "表单验证管理插件",
-    "main": "src/vue-validator-manage.js",
+    "main": "dist/vue-validator-manage.common.js",
     "author": "tangciwei",
     "email": "tangciwei@baidu.com",
     "license": "ISC",
