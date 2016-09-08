@@ -1,7 +1,7 @@
 /**
  * @file validate-manage.js
  * @description vue表单验证管理插件；依赖vue.js和vue-validator.js
- * @author tangciwei(tangciwei@baidu.com)
+ * @author tangciwei(tangciwei@qq.com)
  */
 import u from 'underscore';
 
@@ -53,7 +53,13 @@ ValidateManage.install = (Vue, options) => {
                 let result = '';
 
                 Object.keys(data).forEach(key => {
-                    result += `${key}=${data[key].trim()}&`;
+                    let val = data[key];
+
+                    if (data[key] && typeof data[key] === 'string') {
+                        val = data[key].trim();
+                    }
+
+                    result += `${key}=${val}&`;
                 });
 
                 return result.slice(0, -1);
