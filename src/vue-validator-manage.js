@@ -21,23 +21,26 @@ let ValidateManage = {};
 ValidateManage.install = (Vue, options) => {
     // 收集需要提交的数据的指令
     Vue.directive('fieldname', {
-        params: ['v-model'],
+        params: ['v-model', 'v-text'],
         bind() {
             // 表单提交的name值；
             let name = this.expression;
 
-            // name对应的v-model绑定的值；
-            let vModel = this.params.vModel;
+
             let vm = this.vm;
             let $root = vm.$root;
 
             // 初始化_fieldsData
             $root._fieldsData = $root._fieldsData || {};
-
+            // name对应的v-model绑定的值
+            // v-Model不存在的话，取v-text绑定的值
+            let vModel = this.params.vModel;
+            let vText = this.params.vText;
+            vModel = vModel ? vModel : vText;
             if (vModel) {
                 $root._fieldsData[name] = vm[vModel];
 
-                vm.$watch(vModel, function (newVal, oldVal) {
+                vm.$watch(vModel, function(newVal, oldVal) {
                     $root._fieldsData[name] = newVal;
                 });
             }
@@ -48,7 +51,7 @@ ValidateManage.install = (Vue, options) => {
              * @return {string} 返回值提交结果
              */
 
-            $root.getFieldsData = function () {
+            $root.getFieldsData = function() {
                 let data = $root._fieldsData;
                 let result = '';
 
@@ -58,7 +61,6 @@ ValidateManage.install = (Vue, options) => {
                     if (data[key] && typeof data[key] === 'string') {
                         val = data[key].trim();
                     }
-
                     result += `${key}=${val}&`;
                 });
 
@@ -112,19 +114,18 @@ ValidateManage.install = (Vue, options) => {
 
             Vue.nextTick(() => {
                 // 获取$validation名字
-                let validatorName = findValidatorName(currentVm._directives);
+                let validatorName = findValidatorName(currentVm);
 
                 changeValidation(vm, key, currentVm[validatorName]);
 
                 if (currentVm) {
-                    currentVm.$watch(validatorName, function (newVal, oldVal) {
+                    currentVm.$watch(validatorName, function(newVal, oldVal) {
                         changeValidation(vm, key, newVal);
                     }, {
                         deep: true
                     });
                 }
             });
-
             // vm元素派发事件,只执行一次
             if (!vm.dispatchValidationOnce) {
                 dispatchEvent(vm, 'validation.valid', [FORM_VALID, FORM_INVALID]);
@@ -147,9 +148,9 @@ ValidateManage.install = (Vue, options) => {
 
         // 关于验证结果结构见vue-validator官网：http://vuejs.github.io/vue-validator/zh-cn/structure.html
         // v-fieldset指令对应值的结果；
-        let {valid, invalid, touched, untouched, modified, dirty, pristine, errors} = $validation;
+        let { valid, invalid, touched, untouched, modified, dirty, pristine, errors } = $validation;
 
-        let value = {valid, invalid, touched, untouched, modified, dirty, pristine, errors};
+        let value = { valid, invalid, touched, untouched, modified, dirty, pristine, errors };
 
         vm.validation = assign({}, vm.validation, {
             [key]: value
@@ -213,21 +214,30 @@ ValidateManage.install = (Vue, options) => {
 
     /**
      * 获取验证名
-     * @param {Array} directives 指令的数据集合
+     * @param {Object} vm vue实例
      * @return {String} 返回validatorName,如果没找到返回false
      */
 
-    function findValidatorName(directives) {
+    function findValidatorName(vm) {
         let result;
-
+        let directives = vm._directives;
         directives.some(item => {
             if (item.validatorName) {
                 result = item.validatorName;
                 return true;
             }
         });
-
-        return result || false;
+        // 如果上述方法不生效。（因为有时候指令数组并不能获到）
+        if (!result) {
+            var keys = Object.keys(vm._validatorMaps);
+            if (keys.length) {
+                return keys[0];
+            } else {
+                return false;
+            }
+        } else {
+            return result;
+        }
     }
 
     /**
@@ -238,7 +248,7 @@ ValidateManage.install = (Vue, options) => {
      */
 
     function dispatchEvent(vm, key, eventNames) {
-        vm.$watch(key, function (newVal, oldVal) {
+        vm.$watch(key, function(newVal, oldVal) {
             if (newVal) {
                 this.$dispatch(eventNames[0]);
             } else {

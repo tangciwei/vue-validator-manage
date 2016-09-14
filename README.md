@@ -90,7 +90,8 @@ new Vue({
 
 ###v-fieldname
 
-表单提交的name值，配合v-model使用。和v-model的值绑定。
+表单提交的name值，配合v-model使用,和v-model的值绑定。
+对于普通的标签，如果没有v-model，需要有v-text指令，和v-text指令的内容绑定
 
 ###v-fieldset
 
