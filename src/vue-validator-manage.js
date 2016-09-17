@@ -22,11 +22,9 @@ ValidateManage.install = (Vue, options) => {
     // 收集需要提交的数据的指令
     Vue.directive('fieldname', {
         params: ['v-model', 'v-text'],
-        bind() {
+        update(value) {
             // 表单提交的name值；
-            let name = this.expression;
-
-
+            let name = value;
             let vm = this.vm;
             let $root = vm.$root;
 
