@@ -4,6 +4,7 @@
  * @author tangciwei(tangciwei@qq.com)
  */
 
+import Vue from 'vue';
 import u from 'underscore';
 
 // 事件名
@@ -97,8 +98,8 @@ ValidateManage.install = (Vue, options) => {
     Vue.directive('fieldset', {
         update(value) {
             let key = value;
-
-            if (value === undefined) {
+            
+            if (value === undefined ) {
                 key = this.expression;
             }
 
@@ -118,7 +119,9 @@ ValidateManage.install = (Vue, options) => {
                     untouched: true,
                     modified: false,
                     dirty: false,
-                    pristine: true
+                    pristine: true,
+                    // 异步结果
+                    async:{}
                 });
             }
 
@@ -301,6 +304,20 @@ ValidateManage.install = (Vue, options) => {
                         },
                         {deep: true}
                     );
+                    /**
+                     * TODO:实验阶段,耦合show.js。解决目前异步验证方案,待优化
+                     */
+                    if(currentVm.$parent.hasAsync){
+                        $root.validation.async = assign({}, $root.validation.async, {
+                            [key]: 'init'
+                        });
+
+                        currentVm.$parent.$watch('asyncState',(newVal,oldVal)=>{
+                            $root.validation.async[key]=newVal;
+                        });
+                    }
+                    
+
                 }
             });
 
