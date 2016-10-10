@@ -130,7 +130,9 @@ ValidateManage.install = function (Vue, options) {
                     untouched: true,
                     modified: false,
                     dirty: false,
-                    pristine: true
+                    pristine: true,
+                    // 异步结果
+                    async: {}
                 });
             }
 
@@ -306,6 +308,16 @@ ValidateManage.install = function (Vue, options) {
                     currentVm.$watch(validatorName, function (newVal, oldVal) {
                         changeValidation($root, key, newVal);
                     }, { deep: true });
+                    /**
+                     * TODO:实验阶段,耦合show.js。解决目前异步验证方案,待优化
+                     */
+                    if (currentVm.$parent.hasAsync) {
+                        $root.validation.async = assign({}, $root.validation.async, _defineProperty({}, key, 'init'));
+
+                        currentVm.$parent.$watch('asyncState', function (newVal, oldVal) {
+                            $root.validation.async[key] = newVal;
+                        });
+                    }
                 }
             });
 
