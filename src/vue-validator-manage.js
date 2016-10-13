@@ -121,7 +121,9 @@ ValidateManage.install = (Vue, options) => {
                     dirty: false,
                     pristine: true,
                     // 异步结果
-                    async:{}
+                    asyncDetail: {},
+                    // 异步总结果:'true'/'false'/'init'/'loading'
+                    asyncResult: 'true'
                 });
             }
 
@@ -289,6 +291,43 @@ ValidateManage.install = (Vue, options) => {
                     ? true
                     : isExistOnff(vm.collection.modified, true);
             };
+            // 根据某项异步验证状态更新全局异步状态
+            let asyncResult = (asyncDetail, value) => {
+                let result = 'true'
+                if (value === 'false') {
+                    result = 'false';
+                }
+                else {
+                    let asyncKeys = Object.keys(asyncDetail);
+                    let hasFalse = asyncKeys.some(key => asyncDetail[key] === 'false');
+                    if (hasFalse) {
+                        result = 'false';
+                    }
+                    else {
+                        let allTrue = asyncKeys.every(key => asyncDetail[key] === 'true');
+
+                        if (allTrue) {
+                            result = 'true';
+                        }
+                        else {
+                            let allLoading = asyncKeys.every(key => asyncDetail[key] === 'loading');
+                            if (allLoading) {
+                                result = 'loading';
+                            }
+                            else {
+                                result = 'init';
+                            }
+                        }
+                    }
+                }
+                return result;
+            };
+
+            // 异步总结果asyncResult:'true'/'false'/'init'/'loading'
+            let changeAsync = ($root, key, value) => {
+                $root.validation.asyncDetail[key] = value;
+                $root.validation.asyncResult = asyncResult($root.validation.asyncDetail, value);
+            };
 
             Vue.nextTick(() => {
                 // 获取$validation名字
@@ -308,16 +347,15 @@ ValidateManage.install = (Vue, options) => {
                      * TODO:实验阶段,耦合show.js。解决目前异步验证方案,待优化
                      */
                     if(currentVm.$parent.hasAsync){
-                        $root.validation.async = assign({}, $root.validation.async, {
+                        $root.validation.asyncDetail = assign({}, $root.validation.asyncDetail, {
                             [key]: 'init'
                         });
+                        $root.validation.asyncResult = 'init';
 
                         currentVm.$parent.$watch('asyncState',(newVal,oldVal)=>{
-                            $root.validation.async[key]=newVal;
+                            changeAsync($root, key, newVal);
                         });
                     }
-                    
-
                 }
             });
 
