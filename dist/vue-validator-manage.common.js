@@ -1,36 +1,47 @@
-/**
- * @file validate-manage.js
- * @description vue表单验证管理插件；依赖vue.js和vue-validator.js
- * @author tangciwei(tangciwei@qq.com)
- */
+'use strict';
 
-import Vue from 'vue';
-import u from 'underscore';
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _vue = require('vue');
+
+var _vue2 = _interopRequireDefault(_vue);
+
+var _underscore = require('underscore');
+
+var _underscore2 = _interopRequireDefault(_underscore);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
+                                                                                                                                                                                                                   * @file validate-manage.js
+                                                                                                                                                                                                                   * @description vue表单验证管理插件；依赖vue.js和vue-validator.js
+                                                                                                                                                                                                                   * @author tangciwei(tangciwei@qq.com)
+                                                                                                                                                                                                                   */
 
 // 事件名
-const FORM_VALID = 'form-valid';
-const FORM_INVALID = 'form-invalid';
-const FORM_TOUCHED = 'form-touched';
-const FORM_UNTOUCHED = 'form-untouched';
-const FORM_DIRTY = 'form-dirty';
-const FORM_PRISTINE = 'form-pristine';
-const FORM_MODIFIED = 'form-modified';
+var FORM_VALID = 'form-valid';
+var FORM_INVALID = 'form-invalid';
+var FORM_TOUCHED = 'form-touched';
+var FORM_UNTOUCHED = 'form-untouched';
+var FORM_DIRTY = 'form-dirty';
+var FORM_PRISTINE = 'form-pristine';
+var FORM_MODIFIED = 'form-modified';
 
-let assign = Object.assign
-    ? Object.assign
-    : u.extend;
+var assign = Object.assign ? Object.assign : _underscore2.default.extend;
 
-let ValidateManage = {};
+var ValidateManage = {};
 
-ValidateManage.install = (Vue, options) => {
+ValidateManage.install = function (Vue, options) {
     // 收集需要提交的数据的指令
     Vue.directive('fieldname', {
         params: ['v-model', 'v-text'],
-        update(value) {
+        update: function update(value) {
             // 表单提交的name值；
-            let name = value;
+            var name = value;
 
-            if (u.isUndefined(value)) {
+            if (_underscore2.default.isUndefined(value)) {
                 name = this.expression;
             }
 
@@ -38,8 +49,8 @@ ValidateManage.install = (Vue, options) => {
                 return false;
             }
 
-            let vm = this.vm;
-            let $root = vm.$root;
+            var vm = this.vm;
+            var $root = vm.$root;
 
             /**
              * _fieldsData 自主扩展
@@ -52,16 +63,17 @@ ValidateManage.install = (Vue, options) => {
              * name对应的v-model绑定的值
              * v-Model不存在的话，取v-text绑定的值
              */
-            let {vModel, vText} = this.params;
+            var _params = this.params;
+            var vModel = _params.vModel;
+            var vText = _params.vText;
 
-            vModel = vModel
-                ? vModel
-                : vText;
+
+            vModel = vModel ? vModel : vText;
 
             if (vModel) {
                 $root._fieldsData[name] = vm[vModel];
 
-                vm.$watch(vModel, (newVal, oldVal) => {
+                vm.$watch(vModel, function (newVal, oldVal) {
                     $root._fieldsData[name] = newVal;
                 });
             }
@@ -73,13 +85,13 @@ ValidateManage.install = (Vue, options) => {
              * @return {string} 返回值提交结果
              */
 
-            $root.getFieldsData = () => {
-                let data = $root._fieldsData;
-                let result = {};
+            $root.getFieldsData = function () {
+                var data = $root._fieldsData;
+                var result = {};
 
                 // TODO: 得到所有表单域数据
-                Object.keys(data).forEach(key => {
-                    let val = data[key];
+                Object.keys(data).forEach(function (key) {
+                    var val = data[key];
 
                     if (data[key] && typeof data[key] === 'string') {
                         val = data[key].trim();
@@ -91,15 +103,14 @@ ValidateManage.install = (Vue, options) => {
 
                 return JSON.parse(JSON.stringify(result));
             };
-
         }
     });
 
     Vue.directive('fieldset', {
-        update(value) {
-            let key = value;
-            
-            if (value === undefined ) {
+        update: function update(value) {
+            var key = value;
+
+            if (value === undefined) {
                 key = this.expression;
             }
 
@@ -107,8 +118,8 @@ ValidateManage.install = (Vue, options) => {
                 return false;
             }
 
-            let vm = this.vm;
-            let $root = vm.$root;
+            var vm = this.vm;
+            var $root = vm.$root;
 
             // 所有的验证结果都放到这个对象上面的；
             if (!$root.validation) {
@@ -142,9 +153,10 @@ ValidateManage.install = (Vue, options) => {
              * @return {Boolean} 返回真假
              */
 
-            let isExistOnff = (validations, onOff) => {
-                return Object.keys(validations)
-                    .some(key => validations[key] === onOff);
+            var isExistOnff = function isExistOnff(validations, onOff) {
+                return Object.keys(validations).some(function (key) {
+                    return validations[key] === onOff;
+                });
             };
 
             /**
@@ -153,11 +165,11 @@ ValidateManage.install = (Vue, options) => {
              * @return {string} 返回validatorName,如果没找到返回false
              */
 
-            let findValidatorName = vm => {
-                let result = '';
-                let directives = vm._directives;
+            var findValidatorName = function findValidatorName(vm) {
+                var result = '';
+                var directives = vm._directives;
 
-                directives.some(item => {
+                directives.some(function (item) {
                     if (item.validatorName) {
                         result = item.validatorName;
                         return true;
@@ -165,7 +177,7 @@ ValidateManage.install = (Vue, options) => {
                 });
                 // 如果上述方法不生效。（因为有时候指令数组并不能获到）
                 if (!result) {
-                    let keys = Object.keys(vm._validatorMaps);
+                    var keys = Object.keys(vm._validatorMaps);
 
                     if (keys.length) {
                         return keys[0];
@@ -184,7 +196,7 @@ ValidateManage.install = (Vue, options) => {
              * @param {Array} eventNames 时间集合
              */
 
-            let dispatchEvent = (vm, key, eventNames) => {
+            var dispatchEvent = function dispatchEvent(vm, key, eventNames) {
                 vm.$watch(key, function (newVal, oldVal) {
                     if (newVal) {
                         this.$emit(eventNames[0]);
@@ -194,31 +206,30 @@ ValidateManage.install = (Vue, options) => {
                 });
             };
             // TODO: 耗性能，后期优化
-            let copyVm = assign({}, vm);
+            var copyVm = assign({}, vm);
 
             // 找到v-fieldset指令对应的那个实例对象；
-            let findCurrentVm = () => {
-                let directives = vm._directives;
-                let result;
+            var findCurrentVm = function findCurrentVm() {
+                var directives = vm._directives;
+                var result = void 0;
 
-                directives.forEach(item => {
+                directives.forEach(function (item) {
                     if (item.name === 'fieldset') {
-                        let isOk = false;
+                        var isOk = false;
                         // 字面量的情况
                         if (!value && item.expression === key) {
                             isOk = true;
-                        // 变量情况
+                            // 变量情况
                         } else if (value) {
-                            let arr = item.expression.split('.');
+                            var arr = item.expression.split('.');
 
-                            arr.forEach(val => {
+                            arr.forEach(function (val) {
                                 copyVm = copyVm[val];
                             });
 
                             if (copyVm === key) {
                                 isOk = true;
                             }
-
                         }
 
                         if (isOk) {
@@ -231,31 +242,36 @@ ValidateManage.install = (Vue, options) => {
                 return result || false;
             };
 
-            let currentVm = findCurrentVm();
+            var currentVm = findCurrentVm();
             // 这样才能得到$validation和_directives
             /**
              * changeValidation:$validation发生变化时执行，更新所有验证结果；
-
-             * @param {Object} $validation 被监听vm.$validation
+              * @param {Object} $validation 被监听vm.$validation
              */
 
-            let changeValidation = (vm, key, $validation) => {
+            var changeValidation = function changeValidation(vm, key, $validation) {
 
                 /**
                  * 关于验证结果结构见vue-validator官网：http://vuejs.github.io/vue-validator/zh-cn/structure.html
                  */
 
                 // v-fieldset指令对应值的结果；
-                let {valid, invalid, touched, untouched, modified, dirty, pristine, errors} = $validation;
-                let value = {
-                        valid, invalid, touched,
-                        untouched, modified, dirty,
-                        pristine, errors
-                    };
+                var valid = $validation.valid;
+                var invalid = $validation.invalid;
+                var touched = $validation.touched;
+                var untouched = $validation.untouched;
+                var modified = $validation.modified;
+                var dirty = $validation.dirty;
+                var pristine = $validation.pristine;
+                var errors = $validation.errors;
 
-                vm.validation = assign({}, vm.validation, {
-                    [key]: value
-                });
+                var value = {
+                    valid: valid, invalid: invalid, touched: touched,
+                    untouched: untouched, modified: modified, dirty: dirty,
+                    pristine: pristine, errors: errors
+                };
+
+                vm.validation = assign({}, vm.validation, _defineProperty({}, key, value));
 
                 // 更新验证结果；
                 vm.collection.valid[key] = $validation.valid;
@@ -264,57 +280,51 @@ ValidateManage.install = (Vue, options) => {
                 vm.collection.modified[key] = $validation.modified;
 
                 // 更新全局验证结果
-                let validation = vm.validation;
+                var validation = vm.validation;
                 // 是否有效
-                validation.valid = $validation.valid
-                    ? !isExistOnff(vm.collection.valid, false)
-                    : false;
+                validation.valid = $validation.valid ? !isExistOnff(vm.collection.valid, false) : false;
 
                 validation.invalid = !validation.valid;
 
                 // 是否touched
-                validation.touched = $validation.touched
-                    ? true
-                    : isExistOnff(vm.collection.touched, true);
+                validation.touched = $validation.touched ? true : isExistOnff(vm.collection.touched, true);
 
                 validation.untouched = !validation.touched;
 
                 // 是否是dirty
-                validation.dirty = $validation.dirty
-                    ? true
-                    : isExistOnff(vm.collection.dirty, true);
+                validation.dirty = $validation.dirty ? true : isExistOnff(vm.collection.dirty, true);
 
                 validation.pristine = !validation.dirty;
 
                 // 是否modified
-                validation.modified = $validation.modified
-                    ? true
-                    : isExistOnff(vm.collection.modified, true);
+                validation.modified = $validation.modified ? true : isExistOnff(vm.collection.modified, true);
             };
             // 根据某项异步验证状态更新全局异步状态
-            let asyncResult = (asyncDetail, value) => {
-                let result = 'true'
+            var asyncResult = function asyncResult(asyncDetail, value) {
+                var result = 'true';
                 if (value === 'false') {
                     result = 'false';
-                }
-                else {
-                    let asyncKeys = Object.keys(asyncDetail);
-                    let hasFalse = asyncKeys.some(key => asyncDetail[key] === 'false');
+                } else {
+                    var asyncKeys = Object.keys(asyncDetail);
+                    var hasFalse = asyncKeys.some(function (key) {
+                        return asyncDetail[key] === 'false';
+                    });
                     if (hasFalse) {
                         result = 'false';
-                    }
-                    else {
-                        let allTrue = asyncKeys.every(key => asyncDetail[key] === 'true');
+                    } else {
+                        var allTrue = asyncKeys.every(function (key) {
+                            return asyncDetail[key] === 'true';
+                        });
 
                         if (allTrue) {
                             result = 'true';
-                        }
-                        else {
-                            let allLoading = asyncKeys.every(key => asyncDetail[key] === 'loading');
+                        } else {
+                            var allLoading = asyncKeys.every(function (key) {
+                                return asyncDetail[key] === 'loading';
+                            });
                             if (allLoading) {
                                 result = 'loading';
-                            }
-                            else {
+                            } else {
                                 result = 'init';
                             }
                         }
@@ -324,35 +334,29 @@ ValidateManage.install = (Vue, options) => {
             };
 
             // 异步总结果asyncResult:'true'/'false'/'init'/'loading'
-            let changeAsync = ($root, key, value) => {
+            var changeAsync = function changeAsync($root, key, value) {
                 $root.validation.asyncDetail[key] = value;
                 $root.validation.asyncResult = asyncResult($root.validation.asyncDetail, value);
             };
 
-            Vue.nextTick(() => {
+            Vue.nextTick(function () {
                 // 获取$validation名字
-                let validatorName = findValidatorName(currentVm);
+                var validatorName = findValidatorName(currentVm);
 
                 changeValidation($root, key, currentVm[validatorName]);
 
                 if (currentVm) {
-                    currentVm.$watch(
-                        validatorName,
-                        (newVal, oldVal) => {
-                            changeValidation($root, key, newVal);
-                        },
-                        {deep: true}
-                    );
+                    currentVm.$watch(validatorName, function (newVal, oldVal) {
+                        changeValidation($root, key, newVal);
+                    }, { deep: true });
                     /**
                      * TODO:实验阶段,耦合show.js。解决目前异步验证方案,待优化
                      */
-                    if(currentVm.$parent.hasAsync){
-                        $root.validation.asyncDetail = assign({}, $root.validation.asyncDetail, {
-                            [key]: 'init'
-                        });
+                    if (currentVm.$parent.hasAsync) {
+                        $root.validation.asyncDetail = assign({}, $root.validation.asyncDetail, _defineProperty({}, key, 'init'));
                         $root.validation.asyncResult = 'init';
 
-                        currentVm.$parent.$watch('asyncState',(newVal,oldVal)=>{
+                        currentVm.$parent.$watch('asyncState', function (newVal, oldVal) {
                             changeAsync($root, key, newVal);
                         });
                     }
@@ -369,11 +373,8 @@ ValidateManage.install = (Vue, options) => {
             }
         }
     });
-
-
-
 };
 
-Vue.use(ValidateManage);
+_vue2.default.use(ValidateManage);
 
-export default ValidateManage;
+exports.default = ValidateManage;
