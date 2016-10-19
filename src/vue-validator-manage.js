@@ -42,12 +42,13 @@ ValidateManage.install = (Vue, options) => {
             let $root = vm.$root;
 
             /**
-             * _fieldsData 自主扩展
+             * fieldsData 自主扩展
              *
              */
             // 初始化_fieldsData
-            $root._fieldsData = $root._fieldsData || {};
-
+            if (!$root.fieldsData) {
+                $root.$set('fieldsData', {});
+            }
             /**
              * name对应的v-model绑定的值
              * v-Model不存在的话，取v-text绑定的值
@@ -59,10 +60,12 @@ ValidateManage.install = (Vue, options) => {
                 : vText;
 
             if (vModel) {
-                $root._fieldsData[name] = vm[vModel];
+                $root.fieldsData = assign({}, $root.fieldsData, {
+                    [name]: vm[vModel]
+                });
 
                 vm.$watch(vModel, (newVal, oldVal) => {
-                    $root._fieldsData[name] = newVal;
+                    $root.fieldsData[name] = newVal;
                 });
             }
 
@@ -72,9 +75,8 @@ ValidateManage.install = (Vue, options) => {
              *
              * @return {string} 返回值提交结果
              */
-
             $root.getFieldsData = () => {
-                let data = $root._fieldsData;
+                let data = $root.fieldsData;
                 let result = {};
 
                 // TODO: 得到所有表单域数据
