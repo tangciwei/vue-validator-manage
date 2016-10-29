@@ -8,7 +8,7 @@
         "vue-validator": "^2.1.6",
         "underscore": "^1.8.3",
         "base-64": "^0.1.0",
-        "utf8": "^2.1.2",
+        "utf8": "^2.1.2"
     },
     "devDependencies": {
         "babel-core": "^6.13.2",
@@ -18,7 +18,9 @@
         "babel-loader": "^6.2.4",
         "vue-html-loader": "^1.2.3",
         "webpack-dev-server": "^1.14.1",
-        "webpack": "^1.13.1"
+        "webpack": "^1.13.1",
+        "base-64": "^0.1.0",
+        "utf8": "^2.1.2"
     },
     "scripts": {
         "test": "test/demo.html"
