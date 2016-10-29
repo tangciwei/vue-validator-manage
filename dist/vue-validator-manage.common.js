@@ -12,6 +12,14 @@ var _underscore = require('underscore');
 
 var _underscore2 = _interopRequireDefault(_underscore);
 
+var _base = require('base-64');
+
+var _base2 = _interopRequireDefault(_base);
+
+var _utf = require('utf8');
+
+var _utf2 = _interopRequireDefault(_utf);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
@@ -19,6 +27,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                                                                                                                                                                                                                    * @description vue表单验证管理插件；依赖vue.js和vue-validator.js
                                                                                                                                                                                                                    * @author tangciwei(tangciwei@qq.com)
                                                                                                                                                                                                                    */
+
+// base64加密
+
 
 // 事件名
 var FORM_VALID = 'form-valid';
@@ -36,7 +47,7 @@ var ValidateManage = {};
 ValidateManage.install = function (Vue, options) {
     // 收集需要提交的数据的指令
     Vue.directive('fieldname', {
-        params: ['v-model', 'v-text'],
+        params: ['v-model', 'v-text', 'base64'],
         update: function update(value) {
             // 表单提交的name值；
             var name = value;
@@ -64,18 +75,21 @@ ValidateManage.install = function (Vue, options) {
              * name对应的v-model绑定的值
              * v-Model不存在的话，取v-text绑定的值
              */
-            var _params = this.params;
-            var vModel = _params.vModel;
-            var vText = _params.vText;
+            var _params = this.params,
+                vModel = _params.vModel,
+                vText = _params.vText;
 
-
+            var hasBase64 = this.params.base64 ? true : false;
             vModel = vModel ? vModel : vText;
 
             if (vModel) {
-                $root.fieldsData = assign({}, $root.fieldsData, _defineProperty({}, name, vm[vModel]));
+                var nameVal = hasBase64 ? encodeURIComponent(_base2.default.encode(_utf2.default.encode(vm[vModel]))) : vm[vModel];
+
+                $root.fieldsData = assign({}, $root.fieldsData, _defineProperty({}, name, nameVal));
 
                 vm.$watch(vModel, function (newVal, oldVal) {
-                    $root.fieldsData[name] = newVal;
+
+                    $root.fieldsData[name] = hasBase64 ? encodeURIComponent(_base2.default.encode(_utf2.default.encode(newVal))) : newVal;
                 });
             }
 
@@ -256,14 +270,14 @@ ValidateManage.install = function (Vue, options) {
                  */
 
                 // v-fieldset指令对应值的结果；
-                var valid = $validation.valid;
-                var invalid = $validation.invalid;
-                var touched = $validation.touched;
-                var untouched = $validation.untouched;
-                var modified = $validation.modified;
-                var dirty = $validation.dirty;
-                var pristine = $validation.pristine;
-                var errors = $validation.errors;
+                var valid = $validation.valid,
+                    invalid = $validation.invalid,
+                    touched = $validation.touched,
+                    untouched = $validation.untouched,
+                    modified = $validation.modified,
+                    dirty = $validation.dirty,
+                    pristine = $validation.pristine,
+                    errors = $validation.errors;
 
                 var value = {
                     valid: valid, invalid: invalid, touched: touched,

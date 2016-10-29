@@ -6,6 +6,9 @@
 
 import Vue from 'vue';
 import u from 'underscore';
+// base64加密
+import base64 from 'base-64';
+import utf8 from 'utf8';
 
 // 事件名
 const FORM_VALID = 'form-valid';
@@ -25,7 +28,7 @@ let ValidateManage = {};
 ValidateManage.install = (Vue, options) => {
     // 收集需要提交的数据的指令
     Vue.directive('fieldname', {
-        params: ['v-model', 'v-text'],
+        params: ['v-model', 'v-text', 'base64'],
         update(value) {
             // 表单提交的name值；
             let name = value;
@@ -54,18 +57,25 @@ ValidateManage.install = (Vue, options) => {
              * v-Model不存在的话，取v-text绑定的值
              */
             let {vModel, vText} = this.params;
-
+            let hasBase64 = this.params.base64 ? true : false;
             vModel = vModel
                 ? vModel
                 : vText;
 
             if (vModel) {
+                let nameVal = hasBase64
+                    ? encodeURIComponent(base64.encode(utf8.encode(vm[vModel])))
+                    : vm[vModel];
+
                 $root.fieldsData = assign({}, $root.fieldsData, {
-                    [name]: vm[vModel]
+                    [name]: nameVal
                 });
 
                 vm.$watch(vModel, (newVal, oldVal) => {
-                    $root.fieldsData[name] = newVal;
+
+                    $root.fieldsData[name] = hasBase64
+                        ? encodeURIComponent(base64.encode(utf8.encode(newVal)))
+                        : newVal;
                 });
             }
 
