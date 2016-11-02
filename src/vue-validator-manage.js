@@ -82,10 +82,10 @@ ValidateManage.install = (Vue, options) => {
             /**
              * getFieldsData:获得需要提交的表单数据,
              * 每个表单field的数据都去掉前后空格了的。
-             *
+             * collectEmpty: 是否收集字段值为空的信息
              * @return {string} 返回值提交结果
              */
-            $root.getFieldsData = () => {
+            $root.getFieldsData = (collectEmpty = false) => {
                 let data = $root.fieldsData;
                 let result = {};
 
@@ -97,7 +97,9 @@ ValidateManage.install = (Vue, options) => {
                         val = data[key].trim();
                     }
                     if (key) {
-                        result[key] = val;
+                        if(typeof val === 'string' && val || collectEmpty) {
+                            result[key] = val;
+                        }
                     }
                 });
 
