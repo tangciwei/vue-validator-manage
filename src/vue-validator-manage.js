@@ -108,6 +108,7 @@ ValidateManage.install = (Vue, options) => {
     });
 
     Vue.directive('fieldset', {
+        params: ['vfor'],
         update(value) {
             let key = value;
             
@@ -121,6 +122,8 @@ ValidateManage.install = (Vue, options) => {
 
             let vm = this.vm;
             let $root = vm.$root;
+            // 修复for循环bug
+            let vfor = this.params.vfor ? true : false;
 
             // 所有的验证结果都放到这个对象上面的；
             if (!$root.validation) {
@@ -221,11 +224,17 @@ ValidateManage.install = (Vue, options) => {
                             isOk = true;
                         // 变量情况
                         } else if (value) {
-                            let arr = item.expression.split('.');
 
-                            arr.forEach(val => {
-                                copyVm = copyVm[val];
-                            });
+                            if (vfor) {
+                                copyVm = value;
+                            }
+                            else {
+                                let arr = item.expression.split('.');
+
+                                arr.forEach(val => {
+                                    copyVm = copyVm[val];
+                                });
+                            }
 
                             if (copyVm === key) {
                                 isOk = true;
