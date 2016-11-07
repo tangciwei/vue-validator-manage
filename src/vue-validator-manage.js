@@ -29,54 +29,57 @@ ValidateManage.install = (Vue, options) => {
     // 收集需要提交的数据的指令
     Vue.directive('fieldname', {
         params: ['v-model', 'v-text', 'base64'],
-        update(value) {
+        update(value, oldVal) {
             // 表单提交的name值；
             let name = value;
+            // 旧值
+            let oldName = oldVal;
+            let vm = this.vm;
+            let $root = vm.$root;
 
+            // 一定要是未定义
             if (u.isUndefined(value)) {
                 name = this.expression;
             }
 
-            if (name === '') {
-                return false;
+            if (u.isUndefined(oldVal)) {
+                oldName = this.expression;
             }
 
-            let vm = this.vm;
-            let $root = vm.$root;
-
-            /**
-             * fieldsData 自主扩展
-             *
-             */
-            // 初始化_fieldsData
-            if (!$root.fieldsData) {
-                $root.$set('fieldsData', {});
+            // 删除旧值
+            if (oldName && oldName===name) {
+                delete $root._fieldsData[oldName];
             }
+            // 初始化，防止调用报错
+            $root.getFieldsData = $root.getFieldsData || function () {};
+            $root._fieldsData = $root._fieldsData || {};
+
             /**
              * name对应的v-model绑定的值
              * v-Model不存在的话，取v-text绑定的值
              */
-            let {vModel, vText} = this.params;
             let hasBase64 = this.params.base64 ? true : false;
-            vModel = vModel
-                ? vModel
-                : vText;
-
+            let { vModel, vText } = this.params;
+            vModel = vModel ? vModel : vText;
             if (vModel) {
                 let nameVal = hasBase64
                     ? encodeURIComponent(base64.encode(utf8.encode(vm[vModel])))
                     : vm[vModel];
-
-                $root.fieldsData = assign({}, $root.fieldsData, {
-                    [name]: nameVal
-                });
-
+                if (name) {
+                    $root._fieldsData[name] = nameVal;
+                }
                 vm.$watch(vModel, (newVal, oldVal) => {
-
-                    $root.fieldsData[name] = hasBase64
-                        ? encodeURIComponent(base64.encode(utf8.encode(newVal)))
-                        : newVal;
+                    // 旧值删除
+                    if (oldName && oldName===name) {
+                        delete $root._fieldsData[oldName];
+                    }
+                    else if(name !== 'fieldname'){
+                        $root._fieldsData[name] = hasBase64
+                            ? encodeURIComponent(base64.encode(utf8.encode(newVal)))
+                            : newVal;
+                    }
                 });
+
             }
 
             /**
@@ -86,9 +89,8 @@ ValidateManage.install = (Vue, options) => {
              * @return {string} 返回值提交结果
              */
             $root.getFieldsData = (collectEmpty = false) => {
-                let data = $root.fieldsData;
+                let data = $root._fieldsData;
                 let result = {};
-
                 // TODO: 得到所有表单域数据
                 Object.keys(data).forEach(key => {
                     let val = data[key];

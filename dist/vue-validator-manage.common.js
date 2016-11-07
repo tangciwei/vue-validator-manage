@@ -48,48 +48,53 @@ ValidateManage.install = function (Vue, options) {
     // 收集需要提交的数据的指令
     Vue.directive('fieldname', {
         params: ['v-model', 'v-text', 'base64'],
-        update: function update(value) {
+        update: function update(value, oldVal) {
             // 表单提交的name值；
             var name = value;
+            // 旧值
+            var oldName = oldVal;
+            var vm = this.vm;
+            var $root = vm.$root;
 
+            // 一定要是未定义
             if (_underscore2.default.isUndefined(value)) {
                 name = this.expression;
             }
 
-            if (name === '') {
-                return false;
+            if (_underscore2.default.isUndefined(oldVal)) {
+                oldName = this.expression;
             }
 
-            var vm = this.vm;
-            var $root = vm.$root;
-
-            /**
-             * fieldsData 自主扩展
-             *
-             */
-            // 初始化_fieldsData
-            if (!$root.fieldsData) {
-                $root.$set('fieldsData', {});
+            // 删除旧值
+            if (oldName && oldName === name) {
+                delete $root._fieldsData[oldName];
             }
+            // 初始化，防止调用报错
+            $root.getFieldsData = $root.getFieldsData || function () {};
+            $root._fieldsData = $root._fieldsData || {};
+
             /**
              * name对应的v-model绑定的值
              * v-Model不存在的话，取v-text绑定的值
              */
+            var hasBase64 = this.params.base64 ? true : false;
             var _params = this.params,
                 vModel = _params.vModel,
                 vText = _params.vText;
 
-            var hasBase64 = this.params.base64 ? true : false;
             vModel = vModel ? vModel : vText;
-
             if (vModel) {
                 var nameVal = hasBase64 ? encodeURIComponent(_base2.default.encode(_utf2.default.encode(vm[vModel]))) : vm[vModel];
-
-                $root.fieldsData = assign({}, $root.fieldsData, _defineProperty({}, name, nameVal));
-
+                if (name) {
+                    $root._fieldsData[name] = nameVal;
+                }
                 vm.$watch(vModel, function (newVal, oldVal) {
-
-                    $root.fieldsData[name] = hasBase64 ? encodeURIComponent(_base2.default.encode(_utf2.default.encode(newVal))) : newVal;
+                    // 旧值删除
+                    if (oldName && oldName === name) {
+                        delete $root._fieldsData[oldName];
+                    } else if (name !== 'fieldname') {
+                        $root._fieldsData[name] = hasBase64 ? encodeURIComponent(_base2.default.encode(_utf2.default.encode(newVal))) : newVal;
+                    }
                 });
             }
 
@@ -102,9 +107,8 @@ ValidateManage.install = function (Vue, options) {
             $root.getFieldsData = function () {
                 var collectEmpty = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
-                var data = $root.fieldsData;
+                var data = $root._fieldsData;
                 var result = {};
-
                 // TODO: 得到所有表单域数据
                 Object.keys(data).forEach(function (key) {
                     var val = data[key];
