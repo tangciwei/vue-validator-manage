@@ -72,6 +72,7 @@ ValidateManage.install = function (Vue, options) {
             // 初始化，防止调用报错
             $root.getFieldsData = $root.getFieldsData || function () {};
             $root._fieldsData = $root._fieldsData || {};
+            $root.fieldsData = $root.fieldsData || {};
 
             /**
              * name对应的v-model绑定的值
@@ -85,15 +86,20 @@ ValidateManage.install = function (Vue, options) {
             vModel = vModel ? vModel : vText;
             if (vModel) {
                 var nameVal = hasBase64 ? encodeURIComponent(_base2.default.encode(_utf2.default.encode(vm[vModel]))) : vm[vModel];
+
                 if (name) {
                     $root._fieldsData[name] = nameVal;
+                    $root.fieldsData = assign({}, $root.fieldsData, _defineProperty({}, name, nameVal));
                 }
+
                 vm.$watch(vModel, function (newVal, oldVal) {
                     // 旧值删除
                     if (oldName && oldName === name) {
                         delete $root._fieldsData[oldName];
+                        $root.fieldsData[oldName] = '';
                     } else if (name !== 'fieldname') {
                         $root._fieldsData[name] = hasBase64 ? encodeURIComponent(_base2.default.encode(_utf2.default.encode(newVal))) : newVal;
+                        $root.fieldsData[name] = $root._fieldsData[name];
                     }
                 });
             }

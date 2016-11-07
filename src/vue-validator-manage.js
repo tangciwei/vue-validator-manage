@@ -47,12 +47,13 @@ ValidateManage.install = (Vue, options) => {
             }
 
             // 删除旧值
-            if (oldName && oldName===name) {
+            if (oldName && oldName === name) {
                 delete $root._fieldsData[oldName];
             }
             // 初始化，防止调用报错
             $root.getFieldsData = $root.getFieldsData || function () {};
             $root._fieldsData = $root._fieldsData || {};
+            $root.fieldsData = $root.fieldsData || {};
 
             /**
              * name对应的v-model绑定的值
@@ -65,18 +66,25 @@ ValidateManage.install = (Vue, options) => {
                 let nameVal = hasBase64
                     ? encodeURIComponent(base64.encode(utf8.encode(vm[vModel])))
                     : vm[vModel];
+
                 if (name) {
                     $root._fieldsData[name] = nameVal;
+                    $root.fieldsData = assign({}, $root.fieldsData, {
+                        [name]: nameVal
+                    });
                 }
+
                 vm.$watch(vModel, (newVal, oldVal) => {
                     // 旧值删除
-                    if (oldName && oldName===name) {
+                    if (oldName && oldName === name) {
                         delete $root._fieldsData[oldName];
+                        $root.fieldsData[oldName] = '';
                     }
-                    else if(name !== 'fieldname'){
+                    else if (name !== 'fieldname') {
                         $root._fieldsData[name] = hasBase64
                             ? encodeURIComponent(base64.encode(utf8.encode(newVal)))
                             : newVal;
+                        $root.fieldsData[name] = $root._fieldsData[name];
                     }
                 });
 
