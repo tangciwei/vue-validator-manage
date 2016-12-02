@@ -47,7 +47,7 @@ var ValidateManage = {};
 ValidateManage.install = function (Vue, options) {
     // 收集需要提交的数据的指令
     Vue.directive('fieldname', {
-        params: ['v-model', 'v-text', 'base64'],
+        params: ['v-model', 'v-text', 'base64', 'format'],
         update: function update(value, oldVal) {
             // 表单提交的name值；
             var name = value;
@@ -73,6 +73,10 @@ ValidateManage.install = function (Vue, options) {
             $root.getFieldsData = $root.getFieldsData || function () {};
             $root._fieldsData = $root._fieldsData || {};
             $root.fieldsData = $root.fieldsData || {};
+            // 收集时格式化
+            var format = this.params.format || function (val) {
+                return val;
+            };
 
             /**
              * name对应的v-model绑定的值
@@ -85,7 +89,11 @@ ValidateManage.install = function (Vue, options) {
 
             vModel = vModel ? vModel : vText;
             if (vModel) {
-                var nameVal = hasBase64 ? encodeURIComponent(_base2.default.encode(_utf2.default.encode(vm[vModel]))) : vm[vModel];
+                var nameVal = format(vm[vModel]);
+                if (hasBase64) {
+                    var utf8Encode = _utf2.default.encode(nameVal);
+                    nameVal = encodeURIComponent(_base2.default.encode(utf8Encode));
+                }
 
                 if (name) {
                     $root._fieldsData[name] = nameVal;
@@ -93,6 +101,7 @@ ValidateManage.install = function (Vue, options) {
                 }
 
                 vm.$watch(vModel, function (newVal, oldVal) {
+                    newVal = format(newVal);
                     // 旧值删除
                     if (oldName && oldName === name) {
                         delete $root._fieldsData[oldName];
