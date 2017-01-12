@@ -7,8 +7,9 @@
 import Vue from 'vue';
 import u from 'underscore';
 // base64加密
-import base64 from 'base-64';
-import utf8 from 'utf8';
+let encode = str => {
+    return this.btoa(unescape(encodeURIComponent(str)));
+};
 
 // 事件名
 const FORM_VALID = 'form-valid';
@@ -69,8 +70,8 @@ ValidateManage.install = (Vue, options) => {
             if (vModel) {
                 let nameVal = format(vm[vModel]);
                 if (hasBase64) {
-                    let utf8Encode = utf8.encode(nameVal);
-                    nameVal = encodeURIComponent(base64.encode(utf8Encode));
+                    let utf8Encode = encode(nameVal);
+                    nameVal = encodeURIComponent(utf8Encode);
                 }
 
                 if (name) {
@@ -89,7 +90,7 @@ ValidateManage.install = (Vue, options) => {
                     }
                     else if (name !== 'fieldname') {
                         $root._fieldsData[name] = hasBase64
-                            ? encodeURIComponent(base64.encode(utf8.encode(newVal)))
+                            ? encodeURIComponent(encode(nameVal))
                             : newVal;
                         $root.fieldsData[name] = $root._fieldsData[name];
                     }

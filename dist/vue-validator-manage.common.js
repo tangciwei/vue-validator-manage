@@ -12,14 +12,6 @@ var _underscore = require('underscore');
 
 var _underscore2 = _interopRequireDefault(_underscore);
 
-var _base = require('base-64');
-
-var _base2 = _interopRequireDefault(_base);
-
-var _utf = require('utf8');
-
-var _utf2 = _interopRequireDefault(_utf);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
@@ -29,7 +21,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                                                                                                                                                                                                                    */
 
 // base64加密
-
+var encode = function encode(str) {
+    return undefined.btoa(unescape(encodeURIComponent(str)));
+};
 
 // 事件名
 var FORM_VALID = 'form-valid';
@@ -89,28 +83,30 @@ ValidateManage.install = function (Vue, options) {
 
             vModel = vModel ? vModel : vText;
             if (vModel) {
-                var nameVal = format(vm[vModel]);
-                if (hasBase64) {
-                    var utf8Encode = _utf2.default.encode(nameVal);
-                    nameVal = encodeURIComponent(_base2.default.encode(utf8Encode));
-                }
-
-                if (name) {
-                    $root._fieldsData[name] = nameVal;
-                    $root.fieldsData = assign({}, $root.fieldsData, _defineProperty({}, name, nameVal));
-                }
-
-                vm.$watch(vModel, function (newVal, oldVal) {
-                    newVal = format(newVal);
-                    // 旧值删除
-                    if (oldName && oldName === name) {
-                        delete $root._fieldsData[oldName];
-                        $root.fieldsData[oldName] = '';
-                    } else if (name !== 'fieldname') {
-                        $root._fieldsData[name] = hasBase64 ? encodeURIComponent(_base2.default.encode(_utf2.default.encode(newVal))) : newVal;
-                        $root.fieldsData[name] = $root._fieldsData[name];
+                (function () {
+                    var nameVal = format(vm[vModel]);
+                    if (hasBase64) {
+                        var utf8Encode = encode(nameVal);
+                        nameVal = encodeURIComponent(utf8Encode);
                     }
-                });
+
+                    if (name) {
+                        $root._fieldsData[name] = nameVal;
+                        $root.fieldsData = assign({}, $root.fieldsData, _defineProperty({}, name, nameVal));
+                    }
+
+                    vm.$watch(vModel, function (newVal, oldVal) {
+                        newVal = format(newVal);
+                        // 旧值删除
+                        if (oldName && oldName === name) {
+                            delete $root._fieldsData[oldName];
+                            $root.fieldsData[oldName] = '';
+                        } else if (name !== 'fieldname') {
+                            $root._fieldsData[name] = hasBase64 ? encodeURIComponent(encode(nameVal)) : newVal;
+                            $root.fieldsData[name] = $root._fieldsData[name];
+                        }
+                    });
+                })();
             }
 
             /**
