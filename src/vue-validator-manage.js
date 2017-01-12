@@ -8,7 +8,7 @@ import Vue from 'vue';
 import u from 'underscore';
 // base64加密
 let encode = str => {
-    return this.btoa(unescape(encodeURIComponent(str)));
+    return btoa(unescape(encodeURIComponent(str)));
 };
 
 // 事件名

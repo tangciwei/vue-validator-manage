@@ -22,7 +22,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 // base64加密
 var encode = function encode(str) {
-    return undefined.btoa(unescape(encodeURIComponent(str)));
+    return btoa(unescape(encodeURIComponent(str)));
 };
 
 // 事件名
