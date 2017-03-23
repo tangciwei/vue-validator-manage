@@ -387,16 +387,25 @@ ValidateManage.install = (Vue, options) => {
                     /**
                      * TODO:实验阶段,耦合show.js。解决目前异步验证方案,待优化
                      */
-                    if(currentVm.$parent.hasAsync){
+
+                    function asyncWatch(vm) {
                         $root.validation.asyncDetail = assign({}, $root.validation.asyncDetail, {
                             [key]: 'init'
                         });
                         $root.validation.asyncResult = 'init';
 
-                        currentVm.$parent.$watch('asyncState',(newVal,oldVal)=>{
+                        vm.$watch('asyncState', (newVal, oldVal) => {
                             changeAsync($root, key, newVal);
                         });
                     }
+                    // 选择框
+                    if (currentVm.is === 'ui-select-input' && currentVm.hasAsync) {
+                        return asyncWatch(currentVm);
+                    }
+                    if (currentVm.$parent.hasAsync) {
+                        asyncWatch(currentVm.$parent);
+                    }
+
                 }
             });
 

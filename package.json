@@ -1,6 +1,6 @@
 {
     "name": "vue-validator-manage",
-    "version": "1.1.1",
+    "version": "1.1.2",
     "description": "表单验证管理插件",
     "main": "dist/vue-validator-manage.common.js",
     "dependencies": {
