@@ -83,30 +83,28 @@ ValidateManage.install = function (Vue, options) {
 
             vModel = vModel ? vModel : vText;
             if (vModel) {
-                (function () {
-                    var nameVal = format(vm[vModel]);
-                    if (hasBase64) {
-                        var utf8Encode = encode(nameVal);
-                        nameVal = encodeURIComponent(utf8Encode);
-                    }
+                var nameVal = format(vm[vModel]);
+                if (hasBase64) {
+                    var utf8Encode = encode(nameVal);
+                    nameVal = encodeURIComponent(utf8Encode);
+                }
 
-                    if (name) {
-                        $root._fieldsData[name] = nameVal;
-                        $root.fieldsData = assign({}, $root.fieldsData, _defineProperty({}, name, nameVal));
-                    }
+                if (name) {
+                    $root._fieldsData[name] = nameVal;
+                    $root.fieldsData = assign({}, $root.fieldsData, _defineProperty({}, name, nameVal));
+                }
 
-                    vm.$watch(vModel, function (newVal, oldVal) {
-                        newVal = format(newVal);
-                        // 旧值删除
-                        if (oldName && oldName === name) {
-                            delete $root._fieldsData[oldName];
-                            $root.fieldsData[oldName] = '';
-                        } else if (name !== 'fieldname') {
-                            $root._fieldsData[name] = hasBase64 ? encodeURIComponent(encode(nameVal)) : newVal;
-                            $root.fieldsData[name] = $root._fieldsData[name];
-                        }
-                    });
-                })();
+                vm.$watch(vModel, function (newVal, oldVal) {
+                    newVal = format(newVal);
+                    // 旧值删除
+                    if (oldName && oldName === name) {
+                        delete $root._fieldsData[oldName];
+                        $root.fieldsData[oldName] = '';
+                    } else if (name !== 'fieldname') {
+                        $root._fieldsData[name] = hasBase64 ? encodeURIComponent(encode(nameVal)) : newVal;
+                        $root.fieldsData[name] = $root._fieldsData[name];
+                    }
+                });
             }
 
             /**
@@ -387,19 +385,28 @@ ValidateManage.install = function (Vue, options) {
                 changeValidation($root, key, currentVm[validatorName]);
 
                 if (currentVm) {
-                    currentVm.$watch(validatorName, function (newVal, oldVal) {
-                        changeValidation($root, key, newVal);
-                    }, { deep: true });
                     /**
                      * TODO:实验阶段,耦合show.js。解决目前异步验证方案,待优化
                      */
-                    if (currentVm.$parent.hasAsync) {
+
+                    var asyncWatch = function asyncWatch(vm) {
                         $root.validation.asyncDetail = assign({}, $root.validation.asyncDetail, _defineProperty({}, key, 'init'));
                         $root.validation.asyncResult = 'init';
 
-                        currentVm.$parent.$watch('asyncState', function (newVal, oldVal) {
+                        vm.$watch('asyncState', function (newVal, oldVal) {
                             changeAsync($root, key, newVal);
                         });
+                    };
+                    // 选择框
+
+
+                    currentVm.$watch(validatorName, function (newVal, oldVal) {
+                        changeValidation($root, key, newVal);
+                    }, { deep: true });if (currentVm.is === 'ui-select-input' && currentVm.hasAsync) {
+                        return asyncWatch(currentVm);
+                    }
+                    if (currentVm.$parent.hasAsync) {
+                        asyncWatch(currentVm.$parent);
                     }
                 }
             });
