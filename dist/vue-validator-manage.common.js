@@ -123,7 +123,7 @@ ValidateManage.install = function (Vue, options) {
                     var val = data[key];
 
                     if (data[key] && typeof data[key] === 'string') {
-                        val = data[key].trim();
+                        val = data[key].replace(/[\u0000-\u001F|\u007F|\u0080-\u009F]/g, '').trim();
                     }
                     if (key) {
                         if (typeof val === 'string' && val || collectEmpty) {
